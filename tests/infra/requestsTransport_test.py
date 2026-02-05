@@ -4,6 +4,7 @@ from src.infra.notifier.requestsTransport import GithubRequestsTransport
 from tests.mocks.httpClientMock import MockHttpClient
 from tests.mocks.githubAuthMock import GithubAuthMock
 
+
 def test_responese_ok():
     auth = GithubAuthMock()
     client = MockHttpClient(response_ok=True)
@@ -17,6 +18,7 @@ def test_responese_ok():
     assert client.last_data == {"state": "success"}
     assert client.last_headers.get("MockHeader") == "MockValue"
 
+
 def test_response_not_ok():
     auth = GithubAuthMock()
     client = MockHttpClient(response_ok=False)
@@ -29,18 +31,15 @@ def test_response_not_ok():
     except TransportError as _:
         assert True
 
+
 def test_client_exception():
     auth = GithubAuthMock()
     client = MockHttpClient(response_ok=True, raise_exception=True)
     transport = GithubRequestsTransport(auth, client)
     ctx = GithubAuthContext(None)
 
-    try: 
+    try:
         transport.create_commit_status("owner/repo", "sha", {"state": "error"}, ctx)
         assert False, "Expected TransportError was not raised"
     except TransportError as _:
         assert True
-
-
-
-

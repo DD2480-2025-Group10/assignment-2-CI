@@ -8,10 +8,13 @@ from src.infra.notifier.exceptions import TransportError
 from src.infra.githubAuth.githubAuth import GithubAuthContext
 from src.infra.githubAuth.appAuth import GithubAppAuth, GithubAppConfig
 
+
 def generate_jwt_mock(jwt: str = "mock_jwt", exp: int = 0):
     def mock() -> Tuple[str, int]:
         return jwt, exp
+
     return mock
+
 
 def test_jwt_claims():
     appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
@@ -24,6 +27,7 @@ def test_jwt_claims():
     assert claims["iss"] == "mock"
     assert claims["iat"] == -30
     assert 0 < claims["exp"] and claims["exp"] < 10 * 60
+
 
 def test_jwt_caching():
     appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
@@ -39,7 +43,8 @@ def test_jwt_caching():
     token2 = auth._get_jwt()
 
     assert token1 != token2
-    assert token2 == auth._get_jwt() # Should return cached token
+    assert token2 == auth._get_jwt()  # Should return cached token
+
 
 def test_headers_requires_installation_id():
     appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
@@ -53,10 +58,11 @@ def test_headers_requires_installation_id():
 
 def test_headers_returns_bearer_token_from_installation_token():
     appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
-    client = MockHttpClient(response_ok=True, raise_exception=False, response_json={
-        "token":"inst_token_1", 
-        "expires_at": "2030-01-01T00:00:00Z"
-    })
+    client = MockHttpClient(
+        response_ok=True,
+        raise_exception=False,
+        response_json={"token": "inst_token_1", "expires_at": "2030-01-01T00:00:00Z"},
+    )
     clock = ClockMock(fixed_time=0)
     auth = GithubAppAuth(config=appConfig, client=client, clock=clock)
 
@@ -68,10 +74,11 @@ def test_headers_returns_bearer_token_from_installation_token():
 
 def test_installation_token_is_cached_and_http_called_once():
     appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
-    client = MockHttpClient(response_ok=True, raise_exception=False, response_json={
-        "token":"inst_token_1", 
-        "expires_at":"2030-01-01T00:00:00Z"
-    })
+    client = MockHttpClient(
+        response_ok=True,
+        raise_exception=False,
+        response_json={"token": "inst_token_1", "expires_at": "2030-01-01T00:00:00Z"},
+    )
     clock = ClockMock(fixed_time=0)
     auth = GithubAppAuth(config=appConfig, client=client, clock=clock)
     auth._get_jwt = lambda: "mock_jwt"

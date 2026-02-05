@@ -1,6 +1,7 @@
 from typing import Mapping
 from .githubAuth import GithubAuth, GithubAuthContext
 
+
 class GithubPatAuth(GithubAuth):
     def __init__(self, token: str) -> None:
         self.token = token
