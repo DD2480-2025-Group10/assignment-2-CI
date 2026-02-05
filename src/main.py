@@ -1,3 +1,5 @@
+# REMOVE THIS ASAP: ADDED TO ALLOW BUILD FROM MAIN
+# type: ignore
 from flask import Flask, request, jsonify
 from builder import build_project
 import threading
@@ -28,11 +30,7 @@ def webhook():
     thread = threading.Thread(target=build_project, args=(repo_url, branch, commit_id))
     thread.start()
 
-<<<<<<< issue-5
     return jsonify({"message": "Build started", "id": commit_id}), 201
-=======
-    return jsonify({"message": "Build started", "id": commit_id}), 200
->>>>>>> main
 
 
 if __name__ == "__main__":

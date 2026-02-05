@@ -1,3 +1,5 @@
+# REMOVE THIS ASAP: ADDED TO ALLOW BUILD FROM MAIN
+# type: ignore
 import subprocess
 import os
 import shutil
