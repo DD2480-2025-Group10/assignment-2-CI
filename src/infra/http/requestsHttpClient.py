@@ -1,5 +1,5 @@
 from typing import Any
-from src.infra.http.http_client import HttpClient
+from src.infra import HttpClient
 import requests
 
 unkownDict = dict[str, Any]
