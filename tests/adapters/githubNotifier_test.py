@@ -1,4 +1,4 @@
-import pytest
+from typing import Any, Tuple
 
 from src.adapters.notifier.github import GithubNotifier
 from src.infra.notifier.exceptions import TransportError
@@ -10,9 +10,9 @@ from src.ports.notifier import NotificationStatus
 class FakeTransport:
     def __init__(self, *, should_fail: bool = False) -> None:
         self.should_fail = should_fail
-        self.calls = []
+        self.calls: list[Tuple[str, str, dict[str, Any], GithubAuthContext]] = []
 
-    def create_commit_status(self, repo: str, sha: str, payload: dict, ctx: GithubAuthContext) -> None:
+    def create_commit_status(self, repo: str, sha: str, payload: dict[str, Any], ctx: GithubAuthContext) -> None:
         if self.should_fail:
             raise TransportError()
         self.calls.append((repo, sha, payload, ctx))

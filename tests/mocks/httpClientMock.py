@@ -17,9 +17,9 @@ class MockHttpClient(HttpClient):
         self.response_ok = response_ok
         self.response_json = response_json
         self.called_times = 0
-        self.last_url = ""
-        self.last_data = {}
-        self.last_headers = {}
+        self.last_url: str = ""
+        self.last_data: dict[str, Any] = {}
+        self.last_headers: dict[str, Any] = {}
         self.raise_exception = raise_exception
 
     def post(self, url: str, data: dict[str, Any] | None = None, json: dict[str, Any] | None = None, **kwargs: Any) -> Any:

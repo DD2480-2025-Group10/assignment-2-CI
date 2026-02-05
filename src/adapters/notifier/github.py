@@ -2,7 +2,7 @@ from src.infra.githubAuth.githubAuth import GithubAuthContext
 from src.infra.notifier.exceptions import TransportError
 from src.infra.notifier.github import GithubNotificationTransport
 from src.models import BuildRef, BuildReport
-from src.ports import NotificationResult, NotificationStatus, Notifier
+from src.ports.notifier import NotificationResult, NotificationStatus, Notifier
 
 class GithubNotifier(Notifier):
     """

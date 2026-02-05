@@ -1,1 +1,1 @@
-from .notifier import GithubNotifier
+from .notifier.github import GithubNotifier
