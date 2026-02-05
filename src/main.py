@@ -28,7 +28,7 @@ def webhook():
     thread = threading.Thread(target=build_project, args=(repo_url, branch, commit_id))
     thread.start()
 
-    return jsonify({"message": "Build started", "id": commit_id}), 200
+    return jsonify({"message": "Build started", "id": commit_id}), 201
 
 
 if __name__ == "__main__":
