@@ -1,5 +1,5 @@
 from typing import Any, Protocol
-from src.infra import GithubAuthContext
+from src.infra.githubAuth.githubAuth import GithubAuthContext
 
 class GithubNotificationTransport(Protocol):
     """

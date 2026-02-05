@@ -2,10 +2,22 @@
 name = "CI-Server"
 version = "0.1.0"
 requires-python = ">=3"
-dependencies = ["flask==3.0.0", "requests==2.31.0"]
+dependencies = [
+  "flask==3.0.0",
+  "requests==2.31.0",
+  "pyjwt>=2.11.0",
+  "cryptography>=46.0.0",
+]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0.0", "pytest-cov>=7.0.0", "ruff>=0.1.0", "mypy>=1.19.1"]
+dev = [
+  "pytest>=7.0.0",
+  "pytest-cov>=7.0.0",
+  "ruff>=0.1.0",
+  "mypy>=1.19.1",
+  "types-requests>=2.32.0",
+  "urllib3>=2",
+]
 
 [build-system]
 requires = ["setuptools>=61.0"]
