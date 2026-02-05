@@ -5,7 +5,7 @@ requires-python = ">=3"
 dependencies = ["flask==3.0.0", "requests==2.31.0"]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0.0", "pytest-cov>=7.0.0", "ruff>=0.1.0"]
+dev = ["pytest>=7.0.0", "pytest-cov>=7.0.0", "ruff>=0.1.0", "mypy>=1.19.1"]
 
 [build-system]
 requires = ["setuptools>=61.0"]
