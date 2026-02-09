@@ -1,8 +1,10 @@
 # REMOVE THIS ASAP: ADDED TO ALLOW BUILD FROM MAIN
 # type: ignore
-from flask import Flask, request, jsonify
-from builder import build_project
 import threading
+
+from flask import Flask, jsonify, request
+
+from builder import build_project
 
 app = Flask(__name__)
 
@@ -15,6 +17,7 @@ def home():
 @app.route("/webhook", methods=["POST"])
 def webhook():
     data = request.json
+    print("yo")
 
     if not data or "repository" not in data:
         return jsonify({"error": "Invalid payload"}), 400
