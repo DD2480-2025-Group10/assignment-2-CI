@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, Mapping, Tuple
+from typing import Any, Dict, Mapping, Tuple, Optional
 import time
 import jwt
 from .githubAuth import GithubAuth, GithubAuthContext
@@ -30,8 +30,8 @@ class GithubAppAuth(GithubAuth):
     def __init__(
         self,
         config: GithubAppConfig,
-        client: HttpClient | None = None,
-        clock: Clock | None = None,
+        client: Optional[HttpClient] = None,
+        clock: Optional[Clock] = None,
     ) -> None:
         self.cfg = config
         self._client = RequestsHttpClient() if client is None else client
@@ -59,7 +59,7 @@ class GithubAppAuth(GithubAuth):
             )
         return self._get_installation_token(ctx.installation_id)
 
-    def _get_claims(self) -> dict[str, Any]:
+    def _get_claims(self) -> Dict[str, Any]:
         now = int(self._clock.time())
         return {
             "iat": now

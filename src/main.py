@@ -5,9 +5,10 @@ from flask import Flask, request, jsonify
 from src.auth import create_github_auth
 from src.adapters.notifier.github import GithubNotifier
 from src.infra.notifier.requestsTransport import GithubRequestsTransport
+from src.ports.notifier import NotificationStatus
 import threading
 
-from src.models import BuildRef
+from src.models import BuildRef, BuildReport, BuildStatus
 
 app = Flask(__name__)
 
