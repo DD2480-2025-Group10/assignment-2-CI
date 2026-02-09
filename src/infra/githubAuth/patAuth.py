@@ -10,3 +10,6 @@ class GithubPatAuth(GithubAuth):
         return {
             "Authorization": f"Bearer {self.token}",
         }
+
+    def get_token(self, ctx: GithubAuthContext) -> str:
+        return self.token

@@ -52,6 +52,13 @@ class GithubAppAuth(GithubAuth):
             "Authorization": f"Bearer {token}",
         }
 
+    def get_token(self, ctx: GithubAuthContext) -> str:
+        if ctx.installation_id is None:
+            raise TransportError(
+                "Installation ID is required for GitHub App authentication"
+            )
+        return self._get_installation_token(ctx.installation_id)
+
     def _get_claims(self) -> dict[str, Any]:
         now = int(self._clock.time())
         return {
