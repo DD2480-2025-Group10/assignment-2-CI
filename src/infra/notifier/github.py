@@ -1,4 +1,4 @@
-from typing import Any, Protocol
+from typing import Any, Protocol, Dict
 from src.infra.githubAuth.githubAuth import GithubAuthContext
 
 
@@ -11,5 +11,5 @@ class GithubNotificationTransport(Protocol):
     """
 
     def create_commit_status(
-        self, repo: str, sha: str, payload: dict[str, Any], ctx: GithubAuthContext
+        self, repo: str, sha: str, payload: Dict[str, Any], ctx: GithubAuthContext
     ) -> None: ...

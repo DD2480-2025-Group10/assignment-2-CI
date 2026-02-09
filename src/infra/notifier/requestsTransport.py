@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict, Optional
 from src.infra.githubAuth.githubAuth import GithubAuth, GithubAuthContext
 from src.infra.http.httpClient import HttpClient
 from src.infra.http.requestsHttpClient import RequestsHttpClient
@@ -7,12 +7,12 @@ from .exceptions import TransportError
 
 
 class GithubRequestsTransport(GithubNotificationTransport):
-    def __init__(self, auth: GithubAuth, client: HttpClient | None = None) -> None:
+    def __init__(self, auth: GithubAuth, client: Optional[HttpClient] = None) -> None:
         self.auth = auth
         self._client = client if client is not None else RequestsHttpClient()
 
     def create_commit_status(
-        self, repo: str, sha: str, payload: dict[str, Any], ctx: GithubAuthContext
+        self, repo: str, sha: str, payload: Dict[str, Any], ctx: GithubAuthContext
     ) -> None:
         url = f"https://api.github.com/repos/{repo}/statuses/{sha}"
 

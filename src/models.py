@@ -28,7 +28,7 @@ class BuildRef:
     installation_id: Optional[int] = None
 
 
-class BuildStatus(Enum):
+class BuildStatus(str, Enum):
     """
     Enumeration of possible build statuses.
     """
