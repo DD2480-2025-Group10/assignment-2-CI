@@ -1,7 +1,8 @@
 # REMOVE THIS ASAP: ADDED TO ALLOW BUILD FROM MAIN
 # type: ignore
 from flask import Flask, request, jsonify
-#from builder import build_project
+
+# from builder import build_project
 from src.auth import create_github_auth
 from src.adapters.notifier.github import GithubNotifier
 from src.infra.notifier.requestsTransport import GithubRequestsTransport
@@ -16,15 +17,17 @@ AUTH_HANDLER = create_github_auth()
 NOTIFICATION_TRANSPORT = GithubRequestsTransport(AUTH_HANDLER)
 NOTIFICATION_HANDLER = GithubNotifier(NOTIFICATION_TRANSPORT)
 
+
 @app.route("/")
 def home():
     return "CI Server is running!"
 
+
 @app.route("/auth-notify-test", methods=["POST"])
 def auth_notify_test():
     """
-    Endpoint to test authentication and notification. Should be configured to be called 
-    as the webhook URL for the GitHub App. Can be removed after testing or transferred 
+    Endpoint to test authentication and notification. Should be configured to be called
+    as the webhook URL for the GitHub App. Can be removed after testing or transferred
     in a post request middleware.
     """
     raw_request = request.get_json() or {}
@@ -37,18 +40,24 @@ def auth_notify_test():
     }
 
     if not all(build_ref_raw.values()):
-        return jsonify({"error": "Invalid payload, missing required fields", "payload": raw_request}), 401
+        return jsonify(
+            {
+                "error": "Invalid payload, missing required fields",
+                "payload": raw_request,
+            }
+        ), 401
 
     build_ref = BuildRef(**build_ref_raw)
-    dummy_report = BuildReport(state=BuildStatus.SUCCESS, description="Test notification")
+    dummy_report = BuildReport(
+        state=BuildStatus.SUCCESS, description="Test notification"
+    )
 
     result = NOTIFICATION_HANDLER.notify(build_ref, dummy_report)
 
     if result.status == NotificationStatus.SENT:
         return jsonify({"message": "Notification sent successfully"}), 200
-    else: 
+    else:
         return jsonify({"error": f"Failed to send notification: {result.message}"}), 500
-
 
 
 @app.route("/webhook", methods=["POST"])

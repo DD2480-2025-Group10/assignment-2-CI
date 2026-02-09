@@ -13,6 +13,7 @@ class GithubAuth(Protocol):
         Returns the headers required for authenticating with the GitHub API.
         """
         ...
+
     def get_token(self, ctx: GithubAuthContext) -> str:
         """
         Returns the authentication token for the given context.
