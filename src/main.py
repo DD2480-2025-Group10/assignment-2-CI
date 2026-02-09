@@ -1,10 +1,10 @@
 # REMOVE THIS ASAP: ADDED TO ALLOW BUILD FROM MAIN
 # type: ignore
 from flask import Flask, request, jsonify
-from builder import build_project
+#from builder import build_project
 from src.auth import create_github_auth
 from src.adapters.notifier.github import GithubNotifier
-from src.infra.notifier.requestsTransport import RequestsTransport
+from src.infra.notifier.requestsTransport import GithubRequestsTransport
 import threading
 
 from src.models import BuildRef
@@ -12,7 +12,7 @@ from src.models import BuildRef
 app = Flask(__name__)
 
 AUTH_HANDLER = create_github_auth()
-NOTIFICATION_TRANSPORT = RequestsTransport(AUTH_HANDLER)
+NOTIFICATION_TRANSPORT = GithubRequestsTransport(AUTH_HANDLER)
 NOTIFICATION_HANDLER = GithubNotifier(NOTIFICATION_TRANSPORT)
 
 @app.route("/")
