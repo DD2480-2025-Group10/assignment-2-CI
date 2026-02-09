@@ -1,9 +1,7 @@
 # REMOVE THIS ASAP: ADDED TO ALLOW BUILD FROM MAIN
 # type: ignore
-
 from flask import Flask, jsonify, request
 
-from payloads import PayloadValidationError, build_github_push_payload
 from src.adapters.notifier.github import GithubNotifier
 
 # from builder import build_project
@@ -11,6 +9,7 @@ from src.auth import create_github_auth
 from src.builder import build_project
 from src.infra.notifier.requestsTransport import GithubRequestsTransport
 from src.models import BuildRef, BuildReport, BuildStatus
+from src.payloads import PayloadValidationError, build_github_push_payload
 from src.ports.notifier import NotificationStatus
 
 app = Flask(__name__)
