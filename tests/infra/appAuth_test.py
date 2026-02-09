@@ -17,7 +17,7 @@ def generate_jwt_mock(jwt: str = "mock_jwt", exp: int = 0):
 
 
 def test_jwt_claims():
-    appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
+    appConfig = GithubAppConfig(client_id="mock", private_key_pem="key")
     client = MockHttpClient(response_ok=True)
     clock = ClockMock(fixed_time=0)
     auth = GithubAppAuth(config=appConfig, client=client, clock=clock)
@@ -30,7 +30,7 @@ def test_jwt_claims():
 
 
 def test_jwt_caching():
-    appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
+    appConfig = GithubAppConfig(client_id="mock", private_key_pem="key")
     client = MockHttpClient(response_ok=True)
     clock = ClockMock(fixed_time=0)
     auth = GithubAppAuth(config=appConfig, client=client, clock=clock)
@@ -47,7 +47,7 @@ def test_jwt_caching():
 
 
 def test_headers_requires_installation_id():
-    appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
+    appConfig = GithubAppConfig(client_id="mock", private_key_pem="key")
     client = MockHttpClient(response_ok=True)
     clock = ClockMock(fixed_time=0)
     auth = GithubAppAuth(config=appConfig, client=client, clock=clock)
@@ -57,7 +57,7 @@ def test_headers_requires_installation_id():
 
 
 def test_headers_returns_bearer_token_from_installation_token():
-    appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
+    appConfig = GithubAppConfig(client_id="mock", private_key_pem="key")
     client = MockHttpClient(
         response_ok=True,
         raise_exception=False,
@@ -73,7 +73,7 @@ def test_headers_returns_bearer_token_from_installation_token():
 
 
 def test_installation_token_is_cached_and_http_called_once():
-    appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
+    appConfig = GithubAppConfig(client_id="mock", private_key_pem="key")
     client = MockHttpClient(
         response_ok=True,
         raise_exception=False,
@@ -94,7 +94,7 @@ def test_installation_token_is_cached_and_http_called_once():
 
 
 def test_fetch_installation_token_raises_on_http_error_response():
-    appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
+    appConfig = GithubAppConfig(client_id="mock", private_key_pem="key")
     client = MockHttpClient(response_ok=False)
     clock = ClockMock(fixed_time=0)
     auth = GithubAppAuth(config=appConfig, client=client, clock=clock)
@@ -105,7 +105,7 @@ def test_fetch_installation_token_raises_on_http_error_response():
 
 
 def test_fetch_installation_token_raises_on_client_exception():
-    appConfig = GithubAppConfig(app_id="mock", private_key_pem="key")
+    appConfig = GithubAppConfig(client_id="mock", private_key_pem="key")
     client = MockHttpClient(raise_exception=True)
     clock = ClockMock(fixed_time=0)
     auth = GithubAppAuth(config=appConfig, client=client, clock=clock)

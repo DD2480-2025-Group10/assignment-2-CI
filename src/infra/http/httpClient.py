@@ -1,12 +1,12 @@
-from typing import Any, Protocol
+from typing import Any, Protocol, Dict, Optional
 
 
 class HttpClient(Protocol):
     def post(
         self,
         url: str,
-        data: dict[str, Any] | None = None,
-        json: dict[str, Any] | None = None,
+        data: Optional[Dict[str, Any]] = None,
+        json: Optional[Dict[str, Any]] = None,
         **kwargs: Any,
     ) -> Any: ...
 
