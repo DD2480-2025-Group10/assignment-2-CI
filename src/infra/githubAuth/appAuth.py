@@ -16,7 +16,7 @@ class GithubAppConfig:
     This includes the app's identifier and the PEM-encoded private key used for signing JWTs.
     """
 
-    app_id: str
+    client_id: str
     private_key_pem: str
 
 
@@ -66,7 +66,7 @@ class GithubAppAuth(GithubAuth):
             - 30,  # issued 30 seconds in the past to allow deviations in time
             "exp": now
             + 9 * 60,  # 9 minutes expiration (max 10 minutes allowed by GitHub)
-            "iss": self.cfg.app_id,
+            "iss": self.cfg.client_id,
         }
 
     def _generate_jwt(self) -> Tuple[str, int]:
