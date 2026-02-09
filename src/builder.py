@@ -1,62 +1,101 @@
-# REMOVE THIS ASAP: ADDED TO ALLOW BUILD FROM MAIN
-# type: ignore
-import subprocess
 import os
 import shutil
-from history import write_history
-from notify import notify
+import subprocess
 
 
 class BuildErr(Exception):
-    def __init__(self, message, log_content):
+    def __init__(self, message: str, log_content: str):
         super().__init__(message)
         self.log_content = log_content
 
 
-def run_command(step_name, command, cwd, log):
+def run_command(
+    step_name: str, command: list[str], cwd: str, log: list[str]
+) -> list[str]:
     result = subprocess.run(
-        command, cwd=cwd, capture_output=True, text=True, shell=False
+        command,
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        shell=False,
     )
-    log.append(f"\n---{step_name}---\n{result.stdout + result.stderr}")
+    log.append(f"\n---{step_name}---\n{result.stdout}{result.stderr}")
+
     if result.returncode != 0:
-        raise BuildErr
+        raise BuildErr(f"{step_name} failed (exit={result.returncode})", "\n".join(log))
 
     return log
 
 
-def build_project(repo_url, branch, commit_id):
+def build_project(repo_url: str, branch: str, commit_id: str) -> bool:
     print(f"Start processing commit {commit_id} on {branch}")
 
-    work_dir = f"./temp_builds/{commit_id}"
-    os.mkdir(work_dir)
-    log = []
+    base_dir = os.path.abspath("./temp_builds")
+    work_dir = os.path.join(base_dir, commit_id)
+    os.makedirs(work_dir, exist_ok=True)
+
+    repo_dir = os.path.join(work_dir, "repo")
+    venv_dir = os.path.join(work_dir, "venv")
+    venv_python = os.path.join(venv_dir, "bin", "python")
+    venv_pip = os.path.join(venv_dir, "bin", "pip")
+    venv_mypy = os.path.join(venv_dir, "bin", "mypy")
+    venv_pytest = os.path.join(venv_dir, "bin", "pytest")
+
+    log: list[str] = []
     success = False
+
     try:
-        log = run_command("Git Clone", ["git", "clone", repo_url], work_dir, log)
         log = run_command(
-            "Create venv", ["python3", "-m", "venv", "venv"], work_dir, log
+            "Git Clone",
+            ["git", "clone", repo_url, repo_dir],
+            cwd=work_dir,
+            log=log,
         )
         log = run_command(
-            "Activate venv", ["source", "venv/bin/activate"], work_dir, log
+            "Git Checkout Branch",
+            ["git", "checkout", branch],
+            cwd=repo_dir,
+            log=log,
         )
         log = run_command(
-            "Install requirments",
-            ["pip", "install", "-e", '".[dev]"'],
-            work_dir,
-            log,
+            "Git Checkout Commit",
+            ["git", "checkout", commit_id],
+            cwd=repo_dir,
+            log=log,
+        )
+
+        log = run_command(
+            "Create venv",
+            ["python3", "-m", "venv", venv_dir],
+            cwd=work_dir,
+            log=log,
         )
         log = run_command(
-            "Git Checkout Branch", ["git", "checkout", branch], work_dir, log
+            "Upgrade pip",
+            [venv_python, "-m", "pip", "install", "--upgrade", "pip"],
+            cwd=work_dir,
+            log=log,
         )
-        log = run_command("Git Checkout", ["git", "checkout", commit_id], work_dir, log)
-        log = run_command("Sytex Checking", ["mypy", "--strict", "."], work_dir, log)
-        log = run_command("Unit Tests", ["pytest"], work_dir, log)
+
+        log = run_command(
+            "Install requirements",
+            [venv_pip, "install", "-e", ".[dev]"],
+            cwd=repo_dir,
+            log=log,
+        )
+
+        log = run_command(
+            "Syntax Checking",
+            [venv_mypy, "--strict", "."],
+            cwd=repo_dir,
+            log=log,
+        )
 
         success = True
 
     except BuildErr as e:
         success = False
-        print(f"Build error at step {e}")
+        print(f"Build error: {e}")
 
     except Exception as e:
         success = False
@@ -65,11 +104,7 @@ def build_project(repo_url, branch, commit_id):
 
     finally:
         final_log = "\n".join(log)
-        write_history(success, commit_id, final_log)
-        if success:
-            notify(commit_id, "success")
-        else:
-            notify(commit_id, "failure")
+        print(final_log)
 
         if os.path.exists(work_dir):
             shutil.rmtree(work_dir)
