@@ -62,4 +62,3 @@ The secret in this case being the WebHook Secret and NOT the Client Secret. Then
 ```
 
 Add the generated ngrok URL and route as the WebHook URL in the Github App settings. You should now be able to receive events from Github and see them in the ngrok dashboard.
-
