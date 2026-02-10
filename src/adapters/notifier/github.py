@@ -23,7 +23,7 @@ class GithubNotifier(Notifier):
 
     def notify(self, ref: BuildRef, report: BuildReport) -> NotificationResult:
         payload = {
-            "state": report.state,
+            "state": report.state.value,
             "description": report.description,
             "context": report.context,
         }
