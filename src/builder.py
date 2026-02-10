@@ -2,8 +2,10 @@ import os
 import shutil
 import subprocess
 
+from src.models import BuildReport, BuildStatus
 
-class BuildErr(Exception):
+
+class BuildError(Exception):
     def __init__(self, message: str, log_content: str):
         super().__init__(message)
         self.log_content = log_content
@@ -20,14 +22,16 @@ def run_command(
         shell=False,
     )
     log.append(f"\n---{step_name}---\n{result.stdout}{result.stderr}")
-
     if result.returncode != 0:
-        raise BuildErr(f"{step_name} failed (exit={result.returncode})", "\n".join(log))
+        raise BuildError(
+            f"{step_name} failed (exit={result.returncode})", "\n".join(log)
+        )
 
     return log
 
 
-def build_project(repo_url: str, branch: str, commit_id: str) -> bool:
+def build_project(repo_url: str, branch: str, commit_id: str) -> BuildReport:
+    status = BuildStatus.PENDING
     print(f"Start processing commit {commit_id} on {branch}")
 
     base_dir = os.path.abspath("./temp_builds")
@@ -38,11 +42,9 @@ def build_project(repo_url: str, branch: str, commit_id: str) -> bool:
     venv_dir = os.path.join(work_dir, "venv")
     venv_python = os.path.join(venv_dir, "bin", "python")
     venv_pip = os.path.join(venv_dir, "bin", "pip")
-    venv_mypy = os.path.join(venv_dir, "bin", "mypy")
     venv_pytest = os.path.join(venv_dir, "bin", "pytest")
 
     log: list[str] = []
-    success = False
 
     try:
         log = run_command(
@@ -51,6 +53,7 @@ def build_project(repo_url: str, branch: str, commit_id: str) -> bool:
             cwd=work_dir,
             log=log,
         )
+
         log = run_command(
             "Git Checkout Branch",
             ["git", "checkout", branch],
@@ -86,27 +89,34 @@ def build_project(repo_url: str, branch: str, commit_id: str) -> bool:
 
         log = run_command(
             "Syntax Checking",
-            [venv_mypy, "--strict", "."],
+            [venv_python, "-m", "compileall", "-q", "."],
             cwd=repo_dir,
             log=log,
         )
 
-        success = True
+        log = run_command(
+            "Unit Tests",
+            [venv_pytest],
+            cwd=repo_dir,
+            log=log,
+        )
 
-    except BuildErr as e:
-        success = False
+        status = BuildStatus.SUCCESS
+
+    except BuildError as e:
+        status = BuildStatus.FAILURE
         print(f"Build error: {e}")
 
     except Exception as e:
-        success = False
+        status = BuildStatus.ERROR
         print(f"System error: {str(e)}")
         log.append(f"\nSystem Error: {str(e)}")
 
     finally:
         final_log = "\n".join(log)
-        print(final_log)
+        res = BuildReport(state=status)
 
         if os.path.exists(work_dir):
             shutil.rmtree(work_dir)
 
-    return success
+    return res

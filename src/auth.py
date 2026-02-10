@@ -1,7 +1,8 @@
-from src.infra.githubAuth.githubAuth import GithubAuth
-from src.infra.githubAuth.appAuth import GithubAppAuth, GithubAppConfig
-from src.infra.githubAuth.patAuth import GithubPatAuth
 from dotenv import dotenv_values
+
+from src.infra.githubAuth.appAuth import GithubAppAuth, GithubAppConfig
+from src.infra.githubAuth.githubAuth import GithubAuth
+from src.infra.githubAuth.patAuth import GithubPatAuth
 
 
 def create_github_auth() -> GithubAuth:

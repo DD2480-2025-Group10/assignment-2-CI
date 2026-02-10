@@ -8,8 +8,8 @@ from src.adapters.notifier.github import GithubNotifier
 from src.auth import create_github_auth
 from src.builder import build_project
 from src.infra.notifier.requestsTransport import GithubRequestsTransport
+from src.input_validation import PayloadValidationError, build_github_push_payload
 from src.models import BuildRef, BuildReport, BuildStatus
-from src.payloads import PayloadValidationError, build_github_push_payload
 from src.ports.notifier import NotificationStatus
 
 app = Flask(__name__)
@@ -84,16 +84,13 @@ def webhook():
         sha=payload.head_commit_id,
     )
 
-    print(ref)
-
     report = build_project(ref.repo, payload.branch, ref.sha)
 
     response_body = {
         "repo": ref.repo,
         "ref": ref.ref,
         "sha": ref.sha,
-        "state": report,
-        # "description": report.description, // lets add this later
+        "status": report,
     }
 
     status_code = 200 if report else 500
