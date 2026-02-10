@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -25,7 +24,7 @@ class BuildRef:
     repo: str
     ref: str
     sha: str
-    installation_id: Optional[int] = None
+    installation_id: int | None = None
 
 
 class BuildStatus(str, Enum):
@@ -52,6 +51,6 @@ class BuildReport:
     """
 
     state: BuildStatus
-    target_url: Optional[str] = None
-    description: Optional[str] = None
+    target_url: str | None = None
+    description: str | None = None
     context: str = "Group 10 CI/CD Pipeline"
