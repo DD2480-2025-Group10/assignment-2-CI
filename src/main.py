@@ -12,6 +12,8 @@ from src.input_validation import PayloadValidationError, build_github_push_paylo
 from src.models import BuildRef, BuildReport, BuildStatus
 from src.ports.notifier import NotificationStatus
 
+from src.models import BuildRef, BuildReport, BuildStatus
+
 app = Flask(__name__)
 
 AUTH_HANDLER = create_github_auth()
