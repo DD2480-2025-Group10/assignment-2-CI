@@ -31,7 +31,7 @@ def run_command(
 
 
 def build_project(repo_url: str, branch: str, commit_id: str) -> BuildReport:
-    status = BuildStatus.PENDING
+    report = BuildReport(state=BuildStatus.PENDING)
     print(f"Start processing commit {commit_id} on {branch}")
 
     base_dir = os.path.abspath("./temp_builds")
@@ -101,22 +101,22 @@ def build_project(repo_url: str, branch: str, commit_id: str) -> BuildReport:
             log=log,
         )
 
-        status = BuildStatus.SUCCESS
+        report = BuildReport(state=BuildStatus.SUCCESS, description="Build succeeded")
 
     except BuildError as e:
-        status = BuildStatus.FAILURE
+        report = BuildReport(state=BuildStatus.FAILURE, description="Build failed")
         print(f"Build error: {e}")
 
     except Exception as e:
-        status = BuildStatus.ERROR
+        report = BuildReport(BuildStatus.ERROR, description="System error during build")
         print(f"System error: {str(e)}")
         log.append(f"\nSystem Error: {str(e)}")
 
     finally:
+        # Write final log to DB and set report target_url
         final_log = "\n".join(log)
-        res = BuildReport(state=status)
 
         if os.path.exists(work_dir):
             shutil.rmtree(work_dir)
 
-    return res
+    return report

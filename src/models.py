@@ -26,6 +26,26 @@ class BuildRef:
     sha: str
     installation_id: int | None = None
 
+    @property
+    def branch(self) -> str:
+        """
+        Extracts the branch name from the ref field.
+        For example, if ref is "refs/heads/main", this will return "main".
+        If ref is "refs/tags/v1.0", this will return "v1.0".
+        Returns:
+            str: The extracted branch or tag name.
+        """
+        return self.ref.removeprefix("refs/heads/")
+
+    @property
+    def ssh_url(self) -> str:
+        """
+        Constructs the SSH URL for the repository based on the repo field.
+        For example, if repo is "owner/repo", this will return
+        "git@github.com:owner/repo.git".
+        """
+        return f"git@github.com:{self.repo}.git"
+
 
 class BuildStatus(str, Enum):
     """

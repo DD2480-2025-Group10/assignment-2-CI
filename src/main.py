@@ -1,18 +1,15 @@
-# REMOVE THIS ASAP: ADDED TO ALLOW BUILD FROM MAIN
-# type: ignore
-from flask import Flask, jsonify, request
+from typing import Tuple
+from flask import Flask, Response, jsonify, request
 
 from src.adapters.notifier.github import GithubNotifier
 
-# from builder import build_project
 from src.auth import create_github_auth
 from src.builder import build_project
 from src.infra.notifier.requestsTransport import GithubRequestsTransport
 from src.input_validation import PayloadValidationError, build_github_push_payload
-from src.models import BuildRef, BuildReport, BuildStatus
+from src.models import BuildReport, BuildStatus
 from src.ports.notifier import NotificationStatus
 
-from src.models import BuildRef, BuildReport, BuildStatus
 
 app = Flask(__name__)
 
@@ -22,53 +19,16 @@ NOTIFICATION_HANDLER = GithubNotifier(NOTIFICATION_TRANSPORT)
 
 
 @app.route("/")
-def home():
+def home() -> str:
     return "CI Server is running!"
 
 
-@app.route("/auth-notify-test", methods=["POST"])
-def auth_notify_test():
-    """
-    Endpoint to test authentication and notification. Should be configured to be called
-    as the webhook URL for the GitHub App. Can be removed after testing or transferred
-    in a post request middleware.
-    """
-    raw_request = request.get_json() or {}
-
-    build_ref_raw = {
-        "repo": raw_request.get("repository", {}).get("full_name", None),
-        "ref": raw_request.get("ref", None),
-        "sha": raw_request.get("head_commit", {}).get("id", None),
-        "installation_id": raw_request.get("installation", {}).get("id", None),
-    }
-
-    if not all(build_ref_raw.values()):
-        return jsonify(
-            {
-                "error": "Invalid payload, missing required fields",
-                "payload": raw_request,
-            }
-        ), 401
-
-    build_ref = BuildRef(**build_ref_raw)
-    dummy_report = BuildReport(
-        state=BuildStatus.SUCCESS, description="Test notification"
-    )
-
-    result = NOTIFICATION_HANDLER.notify(build_ref, dummy_report)
-
-    if result.status == NotificationStatus.SENT:
-        return jsonify({"message": "Notification sent successfully"}), 200
-    else:
-        return jsonify({"error": f"Failed to send notification: {result.message}"}), 500
-
-
 @app.route("/webhook", methods=["POST"])
-def webhook():
+def webhook() -> Tuple[Response, int]:
     raw = request.get_json(silent=True) or {}
 
     try:
-        payload = build_github_push_payload(raw)
+        ref = build_github_push_payload(raw)
     except PayloadValidationError as exc:
         return (
             jsonify(
@@ -80,13 +40,20 @@ def webhook():
             400,
         )
 
-    ref = BuildRef(
-        repo=payload.repository_full_name,
-        ref=payload.ref,
-        sha=payload.head_commit_id,
+    pending_report = BuildReport(
+        state=BuildStatus.PENDING,
+        description="Build is pending",
     )
 
-    report = build_project(ref.repo, payload.branch, ref.sha)
+    res = NOTIFICATION_HANDLER.notify(ref, pending_report)
+    if res.status != NotificationStatus.SENT:
+        print(f"Failed to send pending notification: {res.message}")
+
+    report = build_project(ref.ssh_url, ref.branch, ref.sha)
+
+    res = NOTIFICATION_HANDLER.notify(ref, report)
+    if res.status != NotificationStatus.SENT:
+        print(f"Failed to send final notification: {res.message}")
 
     response_body = {
         "repo": ref.repo,
