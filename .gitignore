@@ -32,6 +32,11 @@ ENV/
 env/
 virtualenv/
 
+# Sensitive config files
+.env
+github-policy.yml
+github_policy.yml
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
