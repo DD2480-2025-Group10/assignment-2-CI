@@ -9,18 +9,32 @@ from src.models import BuildRef
 
 
 class RepositoryPayload(BaseModel):
+    """
+    Pydantic model for the repository information in the GitHub webhook payload.
+    """
     full_name: str
 
 
 class InstallationPayload(BaseModel):
+    """
+    Pydantic model for the installation information in the GitHub webhook payload, 
+    relevant for GitHub App authentication.
+    """
     id: int
 
 
 class HeadCommitPayload(BaseModel):
+    """
+    Pydantic model for the head commit information in the GitHub webhook payload.
+    """
     id: str
 
 
 class WebhookPayload(BaseModel):
+    """
+    Pydantic model for all the relevant information from the GitHub webhook payload 
+    that is needed for processing.
+    """
     repository: RepositoryPayload
     head_commit: HeadCommitPayload
     ref: str
@@ -35,6 +49,16 @@ InputValidator = Callable[[], FlaskResponse]
 def webhook_validation_factory(
     auth_handler: GithubAuth,
 ) -> Callable[[WebhookHandler], InputValidator]:
+    """
+    Factory wrapper for validating incoming GitHub webhook payloads and extracting necessary information
+
+    Validation differs based on the authentication method used. For GitHub App authentication, the payload 
+    must include installation information, while for PAT authentication, this is not required. The factory 
+    ensures that the payload is correctly parsed and validated according to the expected structure.
+
+    The returned decorator can be applied to a webhook handler function that takes a `BuildRef` as input and 
+    returns a Flask response. 
+    """
     def decorator(f: WebhookHandler) -> InputValidator:
         @wraps(f)
         def wrapper() -> FlaskResponse:
