@@ -28,10 +28,14 @@ def home() -> str:
     """
     return "CI Server is running!"
 
-def notifier_middleware_factory(notifier: GithubNotifier):
-    def notify_middleware(f: Callable[[BuildRef], BuildReport]):
+FlaskResponse = Tuple[Response, int]
+NotifierMiddleware = Callable[[BuildRef], FlaskResponse]
+CiHandler = Callable[[BuildRef], BuildReport]
+
+def notifier_middleware_factory(notifier: GithubNotifier) -> Callable[[CiHandler], NotifierMiddleware]:
+    def notify_middleware(f: CiHandler) -> NotifierMiddleware:
         @wraps(f)
-        def middleware(ref: BuildRef) -> Tuple[Response, int]:
+        def middleware(ref: BuildRef) -> FlaskResponse:
             pending_report = BuildReport(
                 state=BuildStatus.PENDING,
                 description="Build is pending",

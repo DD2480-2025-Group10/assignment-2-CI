@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Optional, Tuple, Callable
+from typing import Optional, ParamSpec, Tuple, Callable, TypeVar
 from src.infra.githubAuth.appAuth import GithubAppAuth
 from pydantic import BaseModel
 from flask import request, jsonify, Response
@@ -22,10 +22,14 @@ class WebhookPayload(BaseModel):
     ref: str
     installation: Optional[InstallationPayload] = None
 
-def webhook_validation_factory(auth_handler: GithubAuth):
-    def webhook_input_validation(f: Callable[[BuildRef], Tuple[Response, int]]) -> Callable[[], Tuple[Response, int]]:
+FlaskResponse = Tuple[Response, int]
+WebhookHandler = Callable[[BuildRef], FlaskResponse]
+InputValidator = Callable[[], FlaskResponse]
+
+def webhook_validation_factory(auth_handler: GithubAuth) -> Callable[[WebhookHandler], InputValidator]:
+    def decorator(f: WebhookHandler) -> InputValidator:
         @wraps(f)
-        def decorated_function():
+        def wrapper() -> FlaskResponse:
             try: 
                 payload = request.get_json(silent=True) or {}
                 body = WebhookPayload.model_validate(payload)
@@ -60,5 +64,5 @@ def webhook_validation_factory(auth_handler: GithubAuth):
             )
 
             return f(ref)
-        return decorated_function
-    return webhook_input_validation
+        return wrapper
+    return decorator
