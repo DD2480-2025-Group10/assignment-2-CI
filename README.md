@@ -1,8 +1,8 @@
 # Setting up the Development Environment
-
+This project uses Python 3.13
 Begin by setting up a virtual environment to manage dependencies:
 ```bash
-python3 -m venv .venv
+python3.13 -m venv .venv
 source .venv/bin/activate
 ```
 
@@ -25,13 +25,13 @@ In `Settings > Integrations > Github Apps` hit `Configure > App settings` and ch
 On the KTH server (in the repository root), add a new `.env` file with the following content: 
 ```bash
 CLIENT_SECRET=your_client_secret # Not strictly needed
-PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY----- ... -----END RSA PRIVATE KEY-----"
+SECRET_KEY="-----BEGIN RSA PRIVATE KEY----- ... -----END RSA PRIVATE KEY-----"
 CLIENT_ID=your_client_id # Found in the about section of the app settings
 ```
 
 After setting up ngrok (see below) and adding the WebHook URL to the app settings, you should be able to run the app with the following command (make sure to have dependencies installed):
 ```bash
-python3 -m src.main
+python3.13 -m src.main
 ```
 
 ## Install and run ngrok
@@ -46,7 +46,7 @@ Visit your [ngrok dashboard](https://dashboard.ngrok.com/get-started/setup/linux
 ngrok config add-authtoken <TOKEN>
 ```
 
-I recommend adding a [trafic policy](https://ngrok.com/docs/traffic-policy/actions/verify-webhook?ref=getting-started&cty=agent-cli) to only allow traffic from Github. This is done by creating a new policy file `github-policy.yml` with the following content:
+I recommend adding a [traffic policy](https://ngrok.com/docs/traffic-policy/actions/verify-webhook?ref=getting-started&cty=agent-cli) to only allow traffic from Github. This is done by creating a new policy file `github-policy.yml` with the following content:
 ```yml
 on_http_request:
   - actions:
@@ -58,8 +58,24 @@ on_http_request:
 
 The secret in this case being the WebHook Secret and NOT the Client Secret. Then, start ngrok with the following command:
 ```bash
-./<path_to_ngrok>/ngrok http 8000 --traffic-policy-file github_policy.yml
+./<path_to_ngrok>/ngrok http 8010 --traffic-policy-file github_policy.yml
 ```
 
 Add the generated ngrok URL and route as the WebHook URL in the Github App settings. You should now be able to receive events from Github and see them in the ngrok dashboard.
 
+
+# Code formatting
+This project uses [Ruff](https://docs.astral.sh/ruff/) for code formatting and linting. The formatting configuration is defined in `pyproject.toml`.
+
+To format all Python files in the project:
+```bash
+ruff format .
+```
+
+To check if code is properly formatted (without making changes):
+```bash
+ruff format --check .
+ruff check .
+```
+
+# Way of working
