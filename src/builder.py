@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+from typing import Tuple
 
 from src.models import BuildReport, BuildStatus
 
@@ -50,7 +51,9 @@ def run_command(
     return log
 
 
-def build_project(repo_url: str, branch: str, commit_id: str) -> BuildReport:
+def build_project(
+    repo_url: str, branch: str, commit_id: str
+) -> Tuple[BuildReport, str]:
     """Build and test a project from a Git repository.
 
     Clones the repository, checks out the specified commit, creates a virtual
@@ -63,9 +66,10 @@ def build_project(repo_url: str, branch: str, commit_id: str) -> BuildReport:
 
     Returns:
         BuildReport with build status (SUCCESS, FAILURE, or ERROR).
+        str with all build logs
     """
     report = BuildReport(state=BuildStatus.PENDING)
-    print(f"Start processing commit {commit_id} on {branch}")
+    print(f"[LOG] Start processing commit {commit_id} on {branch}")
 
     base_dir = os.path.abspath("./temp_builds")
     work_dir = os.path.join(base_dir, commit_id)
@@ -144,12 +148,8 @@ def build_project(repo_url: str, branch: str, commit_id: str) -> BuildReport:
         report = BuildReport(BuildStatus.ERROR, description="System error during build")
         print(f"System error: {str(e)}")
         log.append(f"\nSystem Error: {str(e)}")
-
     finally:
-        # Write final log to DB and set report target_url
-        final_log = "\n".join(log)
-        print(final_log)
         if os.path.exists(work_dir):
             shutil.rmtree(work_dir)
 
-    return report
+    return report, "\n".join(log)
