@@ -6,6 +6,12 @@ from src.models import BuildReport, BuildStatus
 
 
 class BuildError(Exception):
+    """Exception raised when a build step fails.
+
+    Attributes:
+        log_content: Complete log output from the failed build.
+    """
+
     def __init__(self, message: str, log_content: str):
         super().__init__(message)
         self.log_content = log_content
@@ -14,6 +20,20 @@ class BuildError(Exception):
 def run_command(
     step_name: str, command: list[str], cwd: str, log: list[str]
 ) -> list[str]:
+    """Execute a command and log its output.
+
+    Args:
+        step_name: Name of the build step.
+        command: Command and arguments to execute.
+        cwd: Working directory for the command.
+        log: Existing log entries to append to.
+
+    Returns:
+        Updated log with this command's output.
+
+    Raises:
+        BuildError: If the command exits with non-zero status.
+    """
     result = subprocess.run(
         command,
         cwd=cwd,
@@ -31,6 +51,19 @@ def run_command(
 
 
 def build_project(repo_url: str, branch: str, commit_id: str) -> BuildReport:
+    """Build and test a project from a Git repository.
+
+    Clones the repository, checks out the specified commit, creates a virtual
+    environment, installs dependencies, performs syntax checking, and runs tests.
+
+    Args:
+        repo_url: HTTPS URL of the Git repository.
+        branch: Branch name to checkout.
+        commit_id: Full commit SHA to build.
+
+    Returns:
+        BuildReport with build status (SUCCESS, FAILURE, or ERROR).
+    """
     report = BuildReport(state=BuildStatus.PENDING)
     print(f"Start processing commit {commit_id} on {branch}")
 

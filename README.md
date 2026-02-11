@@ -78,4 +78,49 @@ ruff format --check .
 ruff check .
 ```
 
+# API Documentation
+
+This project uses [pdoc](https://pdoc.dev/) to generate API documentation from Python docstrings.
+
+## Generate documentation
+
+To generate HTML documentation for all modules:
+```bash
+python -m pdoc -o docs src
+```
+
+This will create documentation in the `docs/` directory.
+
+## View documentation
+
+### Option 1: Open directly in browser
+Open `docs/index.html` in your web browser:
+```bash
+# On Linux
+xdg-open docs/index.html
+
+# On macOS
+open docs/index.html
+
+# On Windows
+start docs/index.html
+```
+
+### Option 2: Serve with local HTTP server
+Start a local web server to browse the documentation:
+```bash
+cd docs
+python -m http.server 8080
+```
+
+Then open http://localhost:8080 in your browser.
+
+The documentation includes:
+- All public classes and their methods
+- Function signatures with parameter types
+- Return types
+- Docstring descriptions
+- Module structure and organization
+
 # Way of working
+

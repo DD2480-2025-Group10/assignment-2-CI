@@ -5,12 +5,29 @@ from src.models import BuildRef
 
 
 class PayloadValidationError(Exception):
+    """Exception raised when a GitHub webhook payload is invalid.
+
+    Attributes:
+        errors: List of validation error messages.
+    """
+
     def __init__(self, errors: list[str]) -> None:
         super().__init__("Invalid GitHub push payload")
         self.errors = errors
 
 
 def build_github_push_payload(raw: Mapping[str, Any]) -> BuildRef:
+    """Parse and validate a GitHub push webhook payload.
+
+    Args:
+        raw: Raw JSON payload from GitHub webhook.
+
+    Returns:
+        Validated BuildRef object.
+
+    Raises:
+        PayloadValidationError: If required fields are missing.
+    """
     errors: list[str] = []
 
     full_name: Optional[str] = raw.get("repository", {}).get("full_name", None)
