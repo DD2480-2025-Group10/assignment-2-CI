@@ -6,6 +6,10 @@ unkownDict = Optional[Dict[str, Any]]
 
 
 class RequestsHttpClient(HttpClient):
+    """
+    Concrete implementation of HttpClient using the requests library.
+    """
+
     def post(
         self,
         url: str,

@@ -80,7 +80,11 @@ ruff check .
 
 # API Documentation
 
-This project uses [pdoc](https://pdoc.dev/) to generate API documentation from Python docstrings.
+This project uses [pdoc](https://pdoc.dev/) to generate API documentation from Python docstrings. The generated docs 
+are in html format and therefore hard to read the docs folder is included in the .gitignore file.
+
+Instead the docs are hosted on GitHub pages, automatically generated from the `main` branch. 
+The documentation is available at: https://dd2480-2025-group10.github.io/assignment-2-CI/
 
 ## Generate documentation
 

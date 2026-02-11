@@ -1,3 +1,8 @@
+"""
+Provides a simple clock interface for getting the current time
+and a concrete implementation that uses the system clock.
+"""
+
 import time
 from typing import Protocol
 
