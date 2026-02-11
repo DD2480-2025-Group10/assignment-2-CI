@@ -7,14 +7,18 @@ from flask import request, jsonify, Response
 from src.infra.githubAuth.githubAuth import GithubAuth
 from src.models import BuildRef
 
+
 class RepositoryPayload(BaseModel):
     full_name: str
+
 
 class InstallationPayload(BaseModel):
     id: int
 
+
 class HeadCommitPayload(BaseModel):
     id: str
+
 
 class WebhookPayload(BaseModel):
     repository: RepositoryPayload
@@ -22,15 +26,19 @@ class WebhookPayload(BaseModel):
     ref: str
     installation: Optional[InstallationPayload] = None
 
+
 FlaskResponse = Tuple[Response, int]
 WebhookHandler = Callable[[BuildRef], FlaskResponse]
 InputValidator = Callable[[], FlaskResponse]
 
-def webhook_validation_factory(auth_handler: GithubAuth) -> Callable[[WebhookHandler], InputValidator]:
+
+def webhook_validation_factory(
+    auth_handler: GithubAuth,
+) -> Callable[[WebhookHandler], InputValidator]:
     def decorator(f: WebhookHandler) -> InputValidator:
         @wraps(f)
         def wrapper() -> FlaskResponse:
-            try: 
+            try:
                 payload = request.get_json(silent=True) or {}
                 body = WebhookPayload.model_validate(payload)
             except Exception as exc:
@@ -46,7 +54,9 @@ def webhook_validation_factory(auth_handler: GithubAuth) -> Callable[[WebhookHan
                 )
 
             if isinstance(auth_handler, GithubAppAuth) and body.installation is None:
-                print("[ERROR] Missing installation information for GitHub App authentication")
+                print(
+                    "[ERROR] Missing installation information for GitHub App authentication"
+                )
                 return (
                     jsonify(
                         {
@@ -64,5 +74,7 @@ def webhook_validation_factory(auth_handler: GithubAuth) -> Callable[[WebhookHan
             )
 
             return f(ref)
+
         return wrapper
+
     return decorator

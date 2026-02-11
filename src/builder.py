@@ -51,7 +51,9 @@ def run_command(
     return log
 
 
-def build_project(repo_url: str, branch: str, commit_id: str) -> Tuple[BuildReport, str]:
+def build_project(
+    repo_url: str, branch: str, commit_id: str
+) -> Tuple[BuildReport, str]:
     """Build and test a project from a Git repository.
 
     Clones the repository, checks out the specified commit, creates a virtual
