@@ -69,7 +69,7 @@ def build_project(repo_url: str, branch: str, commit_id: str) -> BuildReport:
 
         log = run_command(
             "Create venv",
-            ["python3", "-m", "venv", venv_dir],
+            ["python3.13", "-m", "venv", venv_dir],
             cwd=work_dir,
             log=log,
         )
@@ -115,7 +115,7 @@ def build_project(repo_url: str, branch: str, commit_id: str) -> BuildReport:
     finally:
         # Write final log to DB and set report target_url
         final_log = "\n".join(log)
-
+        print(final_log)
         if os.path.exists(work_dir):
             shutil.rmtree(work_dir)
 
