@@ -49,7 +49,8 @@ def webhook() -> Tuple[Response, int]:
     if res.status != NotificationStatus.SENT:
         print(f"Failed to send pending notification: {res.message}")
 
-    report = build_project(ref.ssh_url, ref.branch, ref.sha)
+    #report = build_project(ref.ssh_url, ref.branch, ref.sha)
+    report = build_project(ref.clone_url, ref.branch, ref.sha)
 
     res = NOTIFICATION_HANDLER.notify(ref, report)
     if res.status != NotificationStatus.SENT:
