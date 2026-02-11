@@ -46,6 +46,11 @@ class BuildRef:
         """
         return f"git@github.com:{self.repo}.git"
 
+    @property
+    def clone_url(self) -> str:
+        """HTTPS URL FOR CLONING REPO"""
+        return f"https://github.com/{self.repo}.git"
+
 
 class BuildStatus(str, Enum):
     """
