@@ -58,7 +58,7 @@ on_http_request:
 
 The secret in this case being the WebHook Secret and NOT the Client Secret. Then, start ngrok with the following command:
 ```bash
-./<path_to_ngrok>/ngrok http 8000 --traffic-policy-file github_policy.yml
+./<path_to_ngrok>/ngrok http 8080 --traffic-policy-file github_policy.yml
 ```
 
 Add the generated ngrok URL and route as the WebHook URL in the Github App settings. You should now be able to receive events from Github and see them in the ngrok dashboard.
