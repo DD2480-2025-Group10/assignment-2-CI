@@ -10,6 +10,7 @@ class PayloadValidationError(Exception):
     Attributes:
         errors: List of validation error messages.
     """
+
     def __init__(self, errors: list[str]) -> None:
         super().__init__("Invalid GitHub push payload")
         self.errors = errors

@@ -14,6 +14,7 @@ class GithubRequestsTransport(GithubNotificationTransport):
     Attributes:
         auth: GitHub authentication handler.
     """
+
     def __init__(self, auth: GithubAuth, client: Optional[HttpClient] = None) -> None:
         self.auth = auth
         self._client = client if client is not None else RequestsHttpClient()

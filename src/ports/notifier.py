@@ -7,6 +7,7 @@ from src.models import BuildRef, BuildReport
 
 class NotificationStatus(Enum):
     """Status of a notification attempt."""
+
     SENT = "sent"
     FAILED = "failed"
 
@@ -19,6 +20,7 @@ class NotificationResult:
         status: Whether the notification was sent or failed.
         message: Optional error message if notification failed.
     """
+
     status: NotificationStatus
     message: Optional[str] = None
 

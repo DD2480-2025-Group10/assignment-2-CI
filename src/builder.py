@@ -7,10 +7,11 @@ from src.models import BuildReport, BuildStatus
 
 class BuildError(Exception):
     """Exception raised when a build step fails.
-    
+
     Attributes:
         log_content: Complete log output from the failed build.
     """
+
     def __init__(self, message: str, log_content: str):
         super().__init__(message)
         self.log_content = log_content
