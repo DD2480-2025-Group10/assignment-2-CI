@@ -7,6 +7,13 @@ from .exceptions import TransportError
 
 
 class GithubRequestsTransport(GithubNotificationTransport):
+    """HTTP transport for sending build status notifications to GitHub.
+
+    Uses the requests library to post commit status updates to the GitHub API.
+
+    Attributes:
+        auth: GitHub authentication handler.
+    """
     def __init__(self, auth: GithubAuth, client: Optional[HttpClient] = None) -> None:
         self.auth = auth
         self._client = client if client is not None else RequestsHttpClient()
@@ -14,6 +21,17 @@ class GithubRequestsTransport(GithubNotificationTransport):
     def create_commit_status(
         self, repo: str, sha: str, payload: Dict[str, Any], ctx: GithubAuthContext
     ) -> None:
+        """Create a commit status on GitHub.
+
+        Args:
+            repo: Repository in format "owner/repo".
+            sha: Commit SHA to update.
+            payload: Status payload (state, description, context).
+            ctx: GitHub authentication context.
+
+        Raises:
+            TransportError: If the API request fails.
+        """
         url = f"https://api.github.com/repos/{repo}/statuses/{sha}"
 
         headers = {

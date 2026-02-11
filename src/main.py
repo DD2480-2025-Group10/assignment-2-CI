@@ -20,11 +20,24 @@ NOTIFICATION_HANDLER = GithubNotifier(NOTIFICATION_TRANSPORT)
 
 @app.route("/")
 def home() -> str:
+    """Health check endpoint.
+
+    Returns:
+        Simple status message indicating the server is running.
+    """
     return "CI Server is running!"
 
 
 @app.route("/webhook", methods=["POST"])
-def webhook() -> Tuple[Response, int]:
+def webhook() -> tuple[Response, int]:
+    """GitHub webhook endpoint for CI/CD pipeline.
+
+    Receives GitHub push events, validates the payload, triggers the build process,
+    and sends status notifications back to GitHub.
+
+    Returns:
+        Tuple of (JSON response, HTTP status code).
+    """
     raw = request.get_json(silent=True) or {}
 
     try:
