@@ -12,24 +12,6 @@ from src.input_validation import webhook_validation_factory
 from src.models import BuildRef, BuildReport, BuildStatus
 from src.ports.notifier import NotificationStatus
 
-
-app = Flask(__name__)
-
-AUTH_HANDLER = create_github_auth()
-NOTIFICATION_TRANSPORT = GithubRequestsTransport(AUTH_HANDLER)
-NOTIFICATION_HANDLER = GithubNotifier(NOTIFICATION_TRANSPORT)
-
-
-@app.route("/")
-def home() -> str:
-    """Health check endpoint.
-
-    Returns:
-        Simple status message indicating the server is running.
-    """
-    return "CI Server is running!"
-
-
 FlaskResponse = Tuple[Response, int]
 NotifierMiddleware = Callable[[BuildRef], FlaskResponse]
 CiHandler = Callable[[BuildRef], BuildReport]
@@ -73,18 +55,37 @@ def notifier_middleware_factory(
     return notify_middleware
 
 
-@app.route("/webhook", methods=["POST"])
-@webhook_validation_factory(AUTH_HANDLER)
-@notifier_middleware_factory(NOTIFICATION_HANDLER)
-def webhook(ref: BuildRef) -> BuildReport:
-    # Stable clone URL with token authentication for GitHub
-    # Allows cloning even private repositories
-    clone_url = f"https://x-access-token:{
-        AUTH_HANDLER.get_token(GithubAuthContext(ref.installation_id))
-    }@github.com/{ref.repo}.git"
-    report, log = build_project(clone_url, ref.branch, ref.sha)
-    return report
+def create_app() -> Flask:
+    app = Flask(__name__)
+
+    AUTH_HANDLER = create_github_auth()
+    NOTIFICATION_TRANSPORT = GithubRequestsTransport(AUTH_HANDLER)
+    NOTIFICATION_HANDLER = GithubNotifier(NOTIFICATION_TRANSPORT)
+
+    @app.route("/webhook", methods=["POST"])
+    @webhook_validation_factory(AUTH_HANDLER)
+    @notifier_middleware_factory(NOTIFICATION_HANDLER)
+    def webhook(ref: BuildRef) -> BuildReport:
+        # Stable clone URL with token authentication for GitHub
+        # Allows cloning even private repositories
+        clone_url = f"https://x-access-token:{
+            AUTH_HANDLER.get_token(GithubAuthContext(ref.installation_id))
+        }@github.com/{ref.repo}.git"
+        report, log = build_project(clone_url, ref.branch, ref.sha)
+        return report
+
+    @app.route("/")
+    def home() -> str:
+        """Health check endpoint.
+
+        Returns:
+            Simple status message indicating the server is running.
+        """
+        return "CI Server is running!"
+
+    return app
 
 
 if __name__ == "__main__":
+    app = create_app()
     app.run(host="0.0.0.0", port=8010, debug=True)
