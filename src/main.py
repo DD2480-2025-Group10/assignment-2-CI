@@ -1,13 +1,15 @@
-from typing import Tuple
-from flask import Flask, Response, jsonify, request
+from functools import wraps
+from typing import Callable, Tuple
+from flask import Flask, Response, jsonify
 
 from src.adapters.notifier.github import GithubNotifier
 
 from src.auth import create_github_auth
 from src.builder import build_project
+from src.infra.githubAuth.githubAuth import GithubAuthContext
 from src.infra.notifier.requestsTransport import GithubRequestsTransport
-from src.input_validation import PayloadValidationError, build_github_push_payload
-from src.models import BuildReport, BuildStatus
+from src.input_validation import webhook_validation_factory 
+from src.models import BuildRef, BuildReport, BuildStatus
 from src.ports.notifier import NotificationStatus
 
 
@@ -16,7 +18,6 @@ app = Flask(__name__)
 AUTH_HANDLER = create_github_auth()
 NOTIFICATION_TRANSPORT = GithubRequestsTransport(AUTH_HANDLER)
 NOTIFICATION_HANDLER = GithubNotifier(NOTIFICATION_TRANSPORT)
-
 
 @app.route("/")
 def home() -> str:
@@ -27,57 +28,45 @@ def home() -> str:
     """
     return "CI Server is running!"
 
+def notifier_middleware_factory(notifier: GithubNotifier):
+    def notify_middleware(f: Callable[[BuildRef], BuildReport]):
+        @wraps(f)
+        def middleware(ref: BuildRef) -> Tuple[Response, int]:
+            pending_report = BuildReport(
+                state=BuildStatus.PENDING,
+                description="Build is pending",
+            )
+
+            res = notifier.notify(ref, pending_report)
+            if res.status != NotificationStatus.SENT:
+                print(f"[ERROR] Failed to send notification: \n\tPayload: {pending_report}\n\tError:{res.message}")
+
+            report = f(ref)
+
+            res = notifier.notify(ref, report)
+            if res.status != NotificationStatus.SENT:
+                print(f"[ERROR] Failed to send notification: \n\tPayload: {report}\n\tError:{res.message}")
+
+            return jsonify({
+                "received": True,
+                "repo": ref.repo,
+                "sha": ref.sha,
+            }), 201
+
+        return middleware
+    return notify_middleware
 
 @app.route("/webhook", methods=["POST"])
-def webhook() -> tuple[Response, int]:
-    """GitHub webhook endpoint for CI/CD pipeline.
-
-    Receives GitHub push events, validates the payload, triggers the build process,
-    and sends status notifications back to GitHub.
-
-    Returns:
-        Tuple of (JSON response, HTTP status code).
-    """
-    raw = request.get_json(silent=True) or {}
-
-    try:
-        ref = build_github_push_payload(raw)
-    except PayloadValidationError as exc:
-        return (
-            jsonify(
-                {
-                    "error": "Invalid payload",
-                    "details": exc.errors,
-                }
-            ),
-            400,
-        )
-
-    pending_report = BuildReport(
-        state=BuildStatus.PENDING,
-        description="Build is pending",
-    )
-
-    res = NOTIFICATION_HANDLER.notify(ref, pending_report)
-    if res.status != NotificationStatus.SENT:
-        print(f"Failed to send pending notification: {res.message}")
-
-    # report = build_project(ref.ssh_url, ref.branch, ref.sha)
-    report = build_project(ref.clone_url, ref.branch, ref.sha)
-    res = NOTIFICATION_HANDLER.notify(ref, report)
-    if res.status != NotificationStatus.SENT:
-        print(f"Failed to send final notification: {res.message}")
-
-    response_body = {
-        "repo": ref.repo,
-        "ref": ref.ref,
-        "sha": ref.sha,
-        "status": report,
-    }
-
-    status_code = 200 if report else 500
-
-    return jsonify(response_body), status_code
+@webhook_validation_factory(AUTH_HANDLER)
+@notifier_middleware_factory(NOTIFICATION_HANDLER)
+def webhook(ref: BuildRef) -> BuildReport:
+    # Stable clone URL with token authentication for GitHub 
+    # Allows cloning even private repositories
+    clone_url = f"https://x-access-token:{AUTH_HANDLER.get_token(
+                                            GithubAuthContext(ref.installation_id)
+                                        )}@github.com/{ref.repo}.git"
+    report, log = build_project(clone_url, ref.branch, ref.sha)
+    return report
 
 
 if __name__ == "__main__":

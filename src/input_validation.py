@@ -1,58 +1,64 @@
-from collections.abc import Mapping
-from typing import Any, Optional, cast
+from functools import wraps
+from typing import Optional, Tuple, Callable
+from src.infra.githubAuth.appAuth import GithubAppAuth
+from pydantic import BaseModel
+from flask import request, jsonify, Response
 
+from src.infra.githubAuth.githubAuth import GithubAuth
 from src.models import BuildRef
 
+class RepositoryPayload(BaseModel):
+    full_name: str
 
-class PayloadValidationError(Exception):
-    """Exception raised when a GitHub webhook payload is invalid.
+class InstallationPayload(BaseModel):
+    id: int
 
-    Attributes:
-        errors: List of validation error messages.
-    """
+class HeadCommitPayload(BaseModel):
+    id: str
 
-    def __init__(self, errors: list[str]) -> None:
-        super().__init__("Invalid GitHub push payload")
-        self.errors = errors
+class WebhookPayload(BaseModel):
+    repository: RepositoryPayload
+    head_commit: HeadCommitPayload
+    ref: str
+    installation: Optional[InstallationPayload] = None
 
+def webhook_validation_factory(auth_handler: GithubAuth):
+    def webhook_input_validation(f: Callable[[BuildRef], Tuple[Response, int]]) -> Callable[[], Tuple[Response, int]]:
+        @wraps(f)
+        def decorated_function():
+            try: 
+                payload = request.get_json(silent=True) or {}
+                body = WebhookPayload.model_validate(payload)
+            except Exception as exc:
+                print(f"[ERROR] Failed to parse webhook payload: {exc}")
+                return (
+                    jsonify(
+                        {
+                            "error": "Invalid payload",
+                            "details": str(exc),
+                        }
+                    ),
+                    400,
+                )
 
-def build_github_push_payload(raw: Mapping[str, Any]) -> BuildRef:
-    """Parse and validate a GitHub push webhook payload.
+            if isinstance(auth_handler, GithubAppAuth) and body.installation is None:
+                print("[ERROR] Missing installation information for GitHub App authentication")
+                return (
+                    jsonify(
+                        {
+                            "error": "Missing installation information for GitHub App authentication",
+                        }
+                    ),
+                    422,
+                )
 
-    Args:
-        raw: Raw JSON payload from GitHub webhook.
+            ref = BuildRef(
+                repo=body.repository.full_name,
+                ref=body.ref,
+                sha=body.head_commit.id,
+                installation_id=body.installation.id if body.installation else None,
+            )
 
-    Returns:
-        Validated BuildRef object.
-
-    Raises:
-        PayloadValidationError: If required fields are missing.
-    """
-    errors: list[str] = []
-
-    full_name: Optional[str] = raw.get("repository", {}).get("full_name", None)
-    ref: Optional[str] = raw.get("ref")
-    head_sha: Optional[str] = raw.get("head_commit", {}).get("id", None)
-    installation_id: Optional[int] = raw.get("installation", {}).get("id", None)
-
-    if full_name is None:
-        errors.append("Payload missing 'repository.full_name' field")
-
-    if ref is None:
-        errors.append("Payload missing 'ref' field")
-
-    if head_sha is None:
-        errors.append("Payload missing 'head_commit.id' field")
-
-    if installation_id is None:
-        errors.append("Payload missing 'installation.id' field")
-
-    if len(errors) > 0:
-        raise PayloadValidationError(errors)
-
-    return BuildRef(
-        repo=str(full_name),
-        ref=str(ref),
-        sha=str(head_sha),
-        installation_id=cast(int, installation_id),
-    )
+            return f(ref)
+        return decorated_function
+    return webhook_input_validation
