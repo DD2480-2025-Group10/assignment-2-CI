@@ -27,7 +27,7 @@ def test_build_project_success(monkeypatch):
     fake = FakeRunCommand()
     monkeypatch.setattr(builder, "run_command", fake)
 
-    report = builder.build_project(
+    report, _ = builder.build_project(
         repo_url="https://example.com/owner/repo.git",
         branch="refs/heads/main",
         commit_id="abc123",
@@ -43,7 +43,7 @@ def test_build_project_fails_on_syntax_error(monkeypatch):
     fake = FakeRunCommand(fail_step="Syntax Checking")
     monkeypatch.setattr(builder, "run_command", fake)
 
-    report = builder.build_project(
+    report, _ = builder.build_project(
         repo_url="https://example.com/owner/bad-repo.git",
         branch="refs/heads/main",
         commit_id="deadbeef",
@@ -59,7 +59,7 @@ def test_build_project_fails_on_test_failure(monkeypatch):
     fake = FakeRunCommand(fail_step="Unit Tests")
     monkeypatch.setattr(builder, "run_command", fake)
 
-    report = builder.build_project(
+    report, _ = builder.build_project(
         repo_url="https://example.com/owner/failing-tests.git",
         branch="refs/heads/main",
         commit_id="cafebabe",
@@ -73,7 +73,7 @@ def test_build_project_reports_system_error(monkeypatch):
     fake = FakeRunCommand(raise_generic=True)
     monkeypatch.setattr(builder, "run_command", fake)
 
-    report = builder.build_project(
+    report, _ = builder.build_project(
         repo_url="https://example.com/owner/repo.git",
         branch="refs/heads/main",
         commit_id="abc123",
