@@ -21,12 +21,13 @@ def notifier_middleware_factory(
     notifier: GithubNotifier,
 ) -> Callable[[CiHandler], NotifierMiddleware]:
     """
-    Middleware factory for creating a notifier middleware that sends notifications before and after 
+    Middleware factory for creating a notifier middleware that sends notifications before and after
     the CI handler is executed.
 
     The middleware sends a "pending" notification before the CI handler is executed, and then sends
     success or failure notifications based on the result of the CI handler. If sending a notification fails,
     """
+
     def notify_middleware(f: CiHandler) -> NotifierMiddleware:
         @wraps(f)
         def middleware(ref: BuildRef) -> FlaskResponse:
@@ -66,7 +67,7 @@ def create_app() -> Flask:
     """
     Creates and configures the Flask application.
 
-    Resposible for setting up routes, middleware, and initializing necessary components such 
+    Resposible for setting up routes, middleware, and initializing necessary components such
     as authentication handlers and notifiers.
     """
     app = Flask(__name__)

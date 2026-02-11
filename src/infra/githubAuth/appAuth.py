@@ -28,10 +28,10 @@ class GithubTokenResponse:
 
 class GithubAppAuth(GithubAuth):
     """
-    Concrete implementation of GithubAuth that uses GitHub App authentication. 
+    Concrete implementation of GithubAuth that uses GitHub App authentication.
 
-    This class handles handles caching and singing of JWTs for authenticating as a GitHub App, 
-    as well as minting and caching installation access tokens for specific installations. It ensures 
+    This class handles handles caching and singing of JWTs for authenticating as a GitHub App,
+    as well as minting and caching installation access tokens for specific installations. It ensures
     that tokens are refreshed as needed while minimizing unnecessary API calls to GitHub.
     """
 

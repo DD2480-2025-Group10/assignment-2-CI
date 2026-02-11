@@ -9,8 +9,8 @@ class GithubAuthContext:
 
 class GithubAuth(Protocol):
     """
-    Generic interface for authenticating against GitHub. This interface abstracts 
-    away the details of the authentication method used (e.g., GitHub App, Personal Access Token) 
+    Generic interface for authenticating against GitHub. This interface abstracts
+    away the details of the authentication method used (e.g., GitHub App, Personal Access Token)
     and provides a consistent way to obtain the necessary headers and tokens for GitHub.
     """
 

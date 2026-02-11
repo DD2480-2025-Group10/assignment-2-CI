@@ -3,8 +3,8 @@
 
 A simple CI-server using GitHub webhooks to build and test this project.
 
-The project is builds on [Flask](https://flask.palletsprojects.com/en/stable/) and uses 
-[Gihub commit statuses](https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28) 
+The project is builds on [Flask](https://flask.palletsprojects.com/en/stable/) and uses
+[Gihub commit statuses](https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28)
 for notifications. The server is designed respond to events from a [GitHub App](https://docs.github.com/en/apps/overview)
 but is also compatible with a normal webhook setup.
 

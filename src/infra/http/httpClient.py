@@ -5,6 +5,7 @@ class HttpClient(Protocol):
     """
     Generic interface for making HTTP requests.
     """
+
     def post(
         self,
         url: str,

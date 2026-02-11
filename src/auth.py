@@ -14,9 +14,9 @@ def create_github_auth() -> GithubAuth:
     - CLIENT_ID
     - PAT_TOKEN
 
-    If SECRET_KEY and CLIENT_ID are present, creates a GithubAppAuth 
-    instance and if only PAT_TOKEN is present, creates a GithubPatAuth 
-    instance. If neither authentication method is properly configured, 
+    If SECRET_KEY and CLIENT_ID are present, creates a GithubAppAuth
+    instance and if only PAT_TOKEN is present, creates a GithubPatAuth
+    instance. If neither authentication method is properly configured,
     raises a ValueError.
     """
 

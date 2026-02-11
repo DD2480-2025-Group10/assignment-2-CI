@@ -6,6 +6,7 @@ class GithubPatAuth(GithubAuth):
     """
     Concrete implementation of GithubAuth that uses a Personal Access Token (PAT) for authentication.
     """
+
     def __init__(self, token: str) -> None:
         self.token = token
 
