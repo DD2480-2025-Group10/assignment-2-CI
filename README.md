@@ -56,7 +56,7 @@ on_http_request:
           secret: "{your secret}"
 ```
 
-The secret in this case being the WebHook Secret and NOT the Client Secret. Then, start ngrok with the following command:
+The secret in this case being the WebHook Secret and NOT the Client Secret. Then, start Ngrok with the following command:
 ```bash
 ./<path_to_ngrok>/ngrok http 8080 --traffic-policy-file github_policy.yml
 ```
