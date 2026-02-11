@@ -124,3 +124,60 @@ The documentation includes:
 
 # Way of working
 
+
+## Principles Established
+
+Principles and constraints are committed to by the team. ✅
+
+Principles and constraints are agreed to by the stakeholders. ✅
+
+The tool needs of the work and its stakeholders are agreed.  ✅
+
+A recommendation for the approach to be taken is available. ✅
+
+The context within which the team will operate is understood ✅
+
+The constraints that apply to the selection, acquisition, and use of practices and tools are
+known. ✅
+
+## Foundation Established
+
+The key practices and tools that form the foundation of the way-of-working are
+selected. ✅
+
+Enough practices for work to start are agreed to by the team. ✅
+
+All non-negotiable practices and tools have been identified. ✅
+
+The gaps that exist between the practices and tools that are needed and the practices and
+tools that are available have been analyzed and understood. ✅
+
+The capability gaps that exist between what is needed to execute the desired way of
+working and the capability levels of the team have been analyzed and understood. ✅
+
+The selected practices and tools have been integrated to form a usable way-of-working. ✅
+
+## In Use
+
+The practices and tools are being used to do real work. ✅
+
+The use of the practices and tools selected are regularly inspected. ✅
+
+The practices and tools are being adapted to the team’s context. ✅
+
+The use of the practices and tools is supported by the team. ✅
+
+Procedures are in place to handle feedback on the team’s way of working. ✅
+
+The practices and tools support team communication and collaboration. ✅
+
+## In Place
+
+The practices and tools are being used by the whole team to perform their work. ❌
+
+All team members have access to the practices and tools required to do their work. ❌
+
+The whole team is involved in the inspection and adaptation of the way-of-working. ❌
+
+
+Based on the checklist in the Essence Standard v1.2, we asses our way of working as currently completing the In Use state and starting with the In Place state. Our practices and tools are being used for real work and team members are beginning to use them consistently. We feel like we have handled feedback better through informal communication such as on Discord. We have not reached the In Place state since the practices and tools are not fully being used by the whole team. The main obstacle to reach this state is the short assignments which limits the time needed for practices to become second nature.
