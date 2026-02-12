@@ -89,6 +89,11 @@ The secret in this case being the WebHook Secret and NOT the Client Secret. Then
 
 Add the generated ngrok URL and route as the WebHook URL in the Github App settings. You should now be able to receive events from Github and see them in the ngrok dashboard.
 
+# Testing
+This project uses pytest to run testcases. To test the project make sure you have installed the requirements, then run 
+```bash
+pytest .
+```
 
 # Code formatting
 This project uses [Ruff](https://docs.astral.sh/ruff/) for code formatting and linting. The formatting configuration is defined in `pyproject.toml`.
