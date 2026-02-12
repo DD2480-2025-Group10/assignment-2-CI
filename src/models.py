@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 import json
 import datetime
+
+
 @dataclass(frozen=True)
 class BuildRef:
     """
@@ -81,7 +83,6 @@ class BuildReport:
     context: str = "Group 10 CI/CD Pipeline"
 
 
-
 class LogType(str, Enum):
     """Types of entries in the build history."""
 
@@ -117,6 +118,7 @@ class LogEntry:
     date_time: datetime
     status: BuildStatus
     gradle_output: str
+
     def generate_log_file_name(self) -> str:
         """Generates a unique filename for storing raw logs on disk.
 
@@ -147,5 +149,5 @@ class LogEntry:
             "status": self.status.value,
             "gradle_output": self.gradle_output,
         }
-        
-        return json.dumps(json_object)                      
+
+        return json.dumps(json_object)

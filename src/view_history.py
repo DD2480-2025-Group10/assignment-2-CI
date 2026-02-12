@@ -1,15 +1,17 @@
 import os, json
 from flask import render_template_string
-from src. models import LogEntry
+from src.models import LogEntry
+
+
 def list_logs():
     """
     Scans the logs directory and renders an HTML dashboard listing all historical builds.
-    
+
     Returns:
         str: An HTML table displaying build commits and links to detailed reports.
     """
     os.makedirs("logs", exist_ok=True)
-    
+
     log_files = sorted(os.listdir("logs"), reverse=True)
 
     html = """
@@ -38,44 +40,47 @@ def list_logs():
     return render_template_string(html, logs=log_files)
 
 
-
 def view_log(filename):
     """
     Retrieves and displays the details of a specific build log.
-    
+
     Args:
         filename (str): The name of the log file to read.
-        
+
     Returns:
         str: A formatted HTML page showing build metadata and console output.
     """
     path = os.path.join("logs", filename)
-    if not os.path.exists(path): return "Not Found", 404
+    if not os.path.exists(path):
+        return "Not Found", 404
 
     with open(path, "r") as f:
         raw_content = f.read()
 
     try:
-
         data = json.loads(raw_content)
         meta = f"SHA: {data.get('commit_SHA')}"
-        logs = data.get('gradle_output', "No logs found.")
+        logs = data.get("gradle_output", "No logs found.")
     except:
         meta, logs = "Raw Log File", raw_content
 
-    return render_template_string("""
+    return render_template_string(
+        """
         <body style="font-family:monospace; padding:20px;">
             <h3>📄 {{ meta }}</h3>
             <pre style="padding:15px; border-radius:5px; overflow-x:auto;">{{ logs }}</pre>
             <a href="/logs">← Back</a>
         </body>
-    """, meta=meta, logs=logs)
+    """,
+        meta=meta,
+        logs=logs,
+    )
 
 
 def save_log_to_file(entry: LogEntry):
     """
     Persists a BuildReport to the local filesystem as a unique log file.
-    
+
     Args:
         entry (LogEntry): The object containing commit info, status, and build logs.
     """

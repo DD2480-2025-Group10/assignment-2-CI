@@ -149,7 +149,6 @@ def build_project(
         print(f"System error: {str(e)}")
         log.append(f"\nSystem Error: {str(e)}")
     finally:
-        
         if os.path.exists(work_dir):
             shutil.rmtree(work_dir)
 

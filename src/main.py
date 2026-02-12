@@ -64,6 +64,7 @@ def notifier_middleware_factory(
 
     return notify_middleware
 
+
 def create_app() -> Flask:
     """
     Creates and configures the Flask application.
@@ -87,7 +88,7 @@ def create_app() -> Flask:
             AUTH_HANDLER.get_token(GithubAuthContext(ref.installation_id))
         }@github.com/{ref.repo}.git"
         report, log_str_gradle = build_project(ref.clone_url, ref.branch, ref.sha)
-        
+
         log_entry = LogEntry(
             type=LogType.INFO if report.state == BuildStatus.SUCCESS else LogType.ERROR,
             repo_url=ref.clone_url,
@@ -114,7 +115,7 @@ def create_app() -> Flask:
     def list_logs_page():
         """
         Route handler for the build history dashboard.
-        
+
         Triggers the retrieval of all log files and displays the summary list to the user.
         """
         return list_logs()
@@ -123,14 +124,17 @@ def create_app() -> Flask:
     def view_log_page(filename):
         """
         Route handler for individual build details.
-        
+
         Fetches the specific log content based on the filename provided in the URL.
-        
+
         Args:
             filename (str): The unique name of the log file to be displayed.
         """
         return view_log(filename)
+
     return app
+
+
 if __name__ == "__main__":
     app = create_app()
     app.run(host="0.0.0.0", port=8010, debug=True)
