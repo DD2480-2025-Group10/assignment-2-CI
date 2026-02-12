@@ -112,7 +112,7 @@ def create_app() -> Flask:
         return "CI Server is running!"
 
     @app.route("/logs")
-    def list_logs_page() ->str:
+    def list_logs_page() -> str:
         """
         Route handler for the build history dashboard.
 
