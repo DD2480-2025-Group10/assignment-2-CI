@@ -89,6 +89,12 @@ The secret in this case being the WebHook Secret and NOT the Client Secret. Then
 
 Add the generated ngrok URL and route as the WebHook URL in the Github App settings. You should now be able to receive events from Github and see them in the ngrok dashboard.
 
+### P+ logging
+In order to check the logging function you need to run ngrok without the traffic policy: 
+```bash
+./<path_to_ngrok>/ngrok http 8010
+```
+To see the past logs, visit [your unique ngrok url]/logs. Click on any of the links to see more details. 
 # Static checking 
 This project uses mypy for static code checking. To check the project make sure you have installed the requirements, then run
 ```bash
