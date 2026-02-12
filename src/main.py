@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import Callable, Tuple
 from flask import Flask, Response, jsonify
-import datetime
+from datetime import datetime
 from src.adapters.notifier.github import GithubNotifier
 
 from src.auth import create_github_auth
@@ -112,7 +112,7 @@ def create_app() -> Flask:
         return "CI Server is running!"
 
     @app.route("/logs")
-    def list_logs_page():
+    def list_logs_page() ->str:
         """
         Route handler for the build history dashboard.
 
@@ -121,7 +121,7 @@ def create_app() -> Flask:
         return list_logs()
 
     @app.route("/logs/<filename>")
-    def view_log_page(filename):
+    def view_log_page(filename: str) -> str:
         """
         Route handler for individual build details.
 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 import json
-import datetime
+from datetime import datetime
 
 
 @dataclass(frozen=True)

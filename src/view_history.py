@@ -3,7 +3,7 @@ from flask import render_template_string
 from src.models import LogEntry
 
 
-def list_logs():
+def list_logs() -> str:
     """
     Scans the logs directory and renders an HTML dashboard listing all historical builds.
 
@@ -40,7 +40,7 @@ def list_logs():
     return render_template_string(html, logs=log_files)
 
 
-def view_log(filename):
+def view_log(filename: str) -> str:
     """
     Retrieves and displays the details of a specific build log.
 
@@ -77,7 +77,7 @@ def view_log(filename):
     )
 
 
-def save_log_to_file(entry: LogEntry):
+def save_log_to_file(entry: LogEntry) -> None:
     """
     Persists a BuildReport to the local filesystem as a unique log file.
 
