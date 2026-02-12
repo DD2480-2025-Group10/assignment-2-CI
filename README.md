@@ -3,7 +3,7 @@ This project is a simple Ci server acting on webhook requests from either github
 
 The server recives webhook requests for either a github app installation or repository webhook, authenticates 
 using appropriate methods (depending on webhook context), builds/tests code and sends commit statuses via the 
-Github API. 
+Github API. testing .... 
 
 The server is built using the following **runtime libraries**: 
 - [Flask](https://flask.palletsprojects.com/en/stable/): Http server library used to route and listen to requests. 
