@@ -1,3 +1,29 @@
+# Ci server
+This project is a simple Ci server acting on webhook requests from either github apps or repositories. 
+
+The server recives webhook requests for either a github app installation or repository webhook, authenticates 
+using appropriate methods (depending on webhook context), builds/tests code and sends commit statuses via the 
+Github API. 
+
+The server is built using the following **runtime libraries**: 
+- [Flask](https://flask.palletsprojects.com/en/stable/): Http server library used to route and listen to requests. 
+- [Requests](https://pypi.org/project/requests/): For outbound http communtication (i.e sending requests to other sevices e.g the github API)
+- [pyjwt](https://pypi.org/project/PyJWT/): Signing JWT tokens in app installation auth flow. 
+- [cryptography](https://pypi.org/project/cryptography/): Provides signing algorithms for PyJWT.
+- [python-dotenv](https://pypi.org/project/python-dotenv/): Reading environment variables. 
+- [pydantic](https://pypi.org/project/pydantic/): Request validation and sanitization. 
+
+For building, testing, docs generation and formatting we use: 
+- [Pytest](https://pypi.org/project/pytest/): Used for running tests. 
+- [Mypy](https://pypi.org/project/mypy/): A static code checker (inplace of building the project).
+- [Pdoc](https://pypi.org/project/pdoc/): Docs generation. 
+- [Ruff](https://pypi.org/project/ruff/): Code formatting. 
+
+Further the following miscellaneous packages are used at development time: 
+- [Pytest-cov](https://pypi.org/project/pytest-cov/): Test coverage measurements.
+- [types-requests](https://pypi.org/project/types-requests/): Allows type-checking across package boundary with the Requests library. 
+- [urllib3](https://pypi.org/project/urllib3/): Required by [types-requests](https://pypi.org/project/types-requests/). 
+
 # Setting up the Development Environment
 This project uses Python 3.13
 Begin by setting up a virtual environment to manage dependencies:
