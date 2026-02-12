@@ -94,7 +94,7 @@ def create_app() -> Flask:
             repo_url=ref.clone_url,
             refspec=ref.ref,
             commit_SHA=ref.sha,
-            date_time=datetime.datetime.now(),
+            date_time=datetime.now(),
             status=report.state,
             gradle_output=log_str_gradle,
         )

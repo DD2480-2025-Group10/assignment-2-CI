@@ -52,7 +52,7 @@ def view_log(filename: str) -> str:
     """
     path = os.path.join("logs", filename)
     if not os.path.exists(path):
-        return "Not Found", 404
+        return "Not Found"
 
     with open(path, "r") as f:
         raw_content = f.read()
