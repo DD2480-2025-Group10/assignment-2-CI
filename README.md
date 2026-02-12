@@ -89,12 +89,14 @@ The secret in this case being the WebHook Secret and NOT the Client Secret. Then
 
 Add the generated ngrok URL and route as the WebHook URL in the Github App settings. You should now be able to receive events from Github and see them in the ngrok dashboard.
 
-### P+ logging
-In order to check the logging function you need to run ngrok without the traffic policy: 
+### P+ view Build History
+To access the web dashboard and inspect build logs, you must run ngrok without the GitHub traffic policy. The verification policy blocks standard browser requests, which prevents manual inspection of the logs: 
 ```bash
 ./<path_to_ngrok>/ngrok http 8010
 ```
-To see the past logs, visit [your unique ngrok url]/logs. Click on any of the links to see more details. 
+To see the past logs, visit ```bash [your unique ngrok url]/logs ```. 
+#### Pre-existing Logs: The logs/ directory in this repository contains several sample logs to provide immediate context for the dashboard's layout.
+#### Live Persistence: Every new push or pull_request event received by the live CI server automatically generates a new, persistent log file stored on the server's local disk.
 # Static checking 
 This project uses mypy for static code checking. To check the project make sure you have installed the requirements, then run
 ```bash
