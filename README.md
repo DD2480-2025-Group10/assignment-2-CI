@@ -3,7 +3,7 @@
 
 # Setting up the Development Environment
 
-Begin by setting up a virtual environment to manage dependencies:
+Begin by setting up a virtual environment to manage dependencies: 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
